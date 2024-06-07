@@ -8,6 +8,7 @@ var NodeHelper = require('node_helper')
 var { createClient } = require('mta-realtime-subway-departures')
 var fs = require('fs-extra')
 var mtaStationIds = require('mta-subway-stations')
+var stationIds = require('mta-subway-complexes')
 
 module.exports = NodeHelper.create({
   start: function () {
@@ -19,22 +20,10 @@ module.exports = NodeHelper.create({
     var client = createClient(apiKey)
     var self = this
     var stations = config.stations.map((obj) => obj.stationId)
-    var stationIds = {}
     var walkingTime = config.stations.map((obj) => obj.walkingTime)
     var dirUpTown = config.stations.map((obj) => obj.dir.upTown)
     var dirDownTown = config.stations.map((obj) => obj.dir.downTown)
     var isList = config.displayType !== 'marquee'
-
-    fs.readFile(
-      `${__dirname}/node_modules/mta-subway-complexes/complexes.json`,
-      'utf8'
-    )
-      .then((data) => {
-        stationIds = JSON.parse(data)
-      })
-      .catch((err) => {
-        throw new Error(err)
-      })
 
     client
       .departures(stations)
